@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { IncidentsByTypeChart } from "@/components/dashboard/incidents-by-type-chart"
 import { IncidentsTrendChart } from "@/components/dashboard/incidents-trend-chart"
 import { KpiCards } from "@/components/dashboard/kpi-cards"
@@ -8,11 +9,20 @@ import { TopBarangays } from "@/components/dashboard/top-barangays"
 export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-xl font-semibold text-foreground sm:text-2xl">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">
-          Municipal overview of disaster incidents, victims, and response status.
-        </p>
+      <div className="flex items-center gap-4">
+        <Image 
+          src="/MIDSALIP.png" 
+          alt="Midsalip LDRRMO Logo" 
+          width={80} 
+          height={80}
+          className="rounded-lg shadow-md"
+        />
+        <div>
+          <h1 className="text-xl font-semibold text-foreground sm:text-2xl">Dashboard</h1>
+          <p className="text-sm text-muted-foreground">
+            Municipal overview of disaster incidents, victims, and response status.
+          </p>
+        </div>
       </div>
 
       <KpiCards />

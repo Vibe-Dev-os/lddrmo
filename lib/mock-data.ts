@@ -58,10 +58,10 @@ export const VICTIM_STATUS_META: Record<VictimStatus, { label: string; color: st
 }
 
 export const STAFF_USERS: StaffUser[] = [
-  { id: "u1", name: "Engr. Ramil Santos", email: "ramil.santos@midsalip.gov.ph", role: "admin" },
-  { id: "u2", name: "Jenny Ochoa", email: "jenny.ochoa@midsalip.gov.ph", role: "encoder" },
-  { id: "u3", name: "Mark Villareal", email: "mark.villareal@midsalip.gov.ph", role: "encoder" },
-  { id: "u4", name: "Provincial DRRM Analyst", email: "analyst@zdsprov.gov.ph", role: "viewer" },
+  { id: "u1", name: "Engr. Ramil Santos", email: "ramil.santos@midsalip.gov.ph", role: "admin", password: "pass123" },
+  { id: "u2", name: "Jenny Ochoa", email: "jenny.ochoa@midsalip.gov.ph", role: "encoder", password: "pass123" },
+  { id: "u3", name: "Mark Villareal", email: "mark.villareal@midsalip.gov.ph", role: "encoder", password: "pass123" },
+  { id: "u4", name: "Provincial DRRM Analyst", email: "analyst@zdsprov.gov.ph", role: "viewer", password: "pass123" },
 ]
 
 // Deterministic seeded RNG so server and client render identical mock data.

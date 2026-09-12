@@ -76,4 +76,5 @@ export interface StaffUser {
   name: string
   email: string
   role: Role
+  password?: string
 }
