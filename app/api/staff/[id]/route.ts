@@ -2,11 +2,12 @@ import { connectToDatabase } from "@/lib/db"
 import { StaffUserModel } from "@/lib/models"
 import { NextResponse } from "next/server"
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase()
+    const { id } = await params
 
-    const staffUser = await StaffUserModel.findOne({ id: params.id }).lean()
+    const staffUser = await StaffUserModel.findOne({ id }).lean()
 
     if (!staffUser) {
       return NextResponse.json({ error: "Staff user not found" }, { status: 404 })
@@ -19,13 +20,14 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase()
+    const { id } = await params
 
     const body = await request.json()
 
-    const staffUser = await StaffUserModel.findOneAndUpdate({ id: params.id }, body, {
+    const staffUser = await StaffUserModel.findOneAndUpdate({ id }, body, {
       new: true,
     }).lean()
 
@@ -40,11 +42,12 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase()
+    const { id } = await params
 
-    await StaffUserModel.deleteOne({ id: params.id })
+    await StaffUserModel.deleteOne({ id })
 
     return NextResponse.json({ success: true })
   } catch (error) {

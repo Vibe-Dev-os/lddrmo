@@ -7,7 +7,15 @@ import { SidebarNav } from "@/components/layout/sidebar-nav"
 import { Topbar } from "@/components/layout/topbar"
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { role } = useApp()
+  const { role, loading } = useApp()
+
+  if (loading) {
+    return (
+      <div className="flex min-h-svh items-center justify-center bg-background">
+        <div className="size-8 animate-spin rounded-full border-2 border-muted border-t-foreground" />
+      </div>
+    )
+  }
 
   if (!role) return <LoginScreen />
 

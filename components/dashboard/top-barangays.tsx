@@ -2,12 +2,11 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useApp } from "@/lib/app-context"
-import { BARANGAYS } from "@/lib/mock-data"
 
 export function TopBarangays() {
-  const { filteredIncidents } = useApp()
+  const { filteredIncidents, barangays } = useApp()
 
-  const counts = BARANGAYS.map((b) => ({
+  const counts = barangays.map((b) => ({
     barangay: b,
     count: filteredIncidents.filter((i) => i.barangayId === b.id).length,
   }))

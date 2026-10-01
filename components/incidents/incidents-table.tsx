@@ -13,13 +13,12 @@ import { SeverityBadge } from "@/components/shared/severity-badge"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { useApp } from "@/lib/app-context"
 import { formatDateTime } from "@/lib/format"
-import { BARANGAYS } from "@/lib/mock-data"
 import type { IncidentStatus } from "@/lib/types"
 
 const PAGE_SIZE = 8
 
 export function IncidentsTable() {
-  const { filteredIncidents } = useApp()
+  const { filteredIncidents, barangays } = useApp()
   const [query, setQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState<IncidentStatus | "all">("all")
   const [barangayFilter, setBarangayFilter] = useState("all")
@@ -30,7 +29,7 @@ export function IncidentsTable() {
       if (statusFilter !== "all" && inc.status !== statusFilter) return false
       if (barangayFilter !== "all" && inc.barangayId !== barangayFilter) return false
       if (query) {
-        const barangay = BARANGAYS.find((b) => b.id === inc.barangayId)?.name ?? ""
+        const barangay = barangays.find((b) => b.id === inc.barangayId)?.name ?? ""
         const haystack = `${inc.id} ${inc.description} ${barangay}`.toLowerCase()
         if (!haystack.includes(query.toLowerCase())) return false
       }
@@ -89,7 +88,7 @@ export function IncidentsTable() {
           <SelectContent>
             <SelectGroup>
               <SelectItem value="all">All Barangays</SelectItem>
-              {BARANGAYS.map((b) => (
+              {barangays.map((b) => (
                 <SelectItem key={b.id} value={b.id}>
                   {b.name}
                 </SelectItem>
@@ -113,7 +112,7 @@ export function IncidentsTable() {
           </TableHeader>
           <TableBody>
             {paged.map((inc) => {
-              const barangay = BARANGAYS.find((b) => b.id === inc.barangayId)
+              const barangay = barangays.find((b) => b.id === inc.barangayId)
               return (
                 <TableRow key={inc.id} className="cursor-pointer">
                   <TableCell className="p-0">

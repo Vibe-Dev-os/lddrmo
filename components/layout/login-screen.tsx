@@ -1,22 +1,32 @@
 "use client"
 
 import Image from "next/image"
-import { Eye, EyeOff, HardHat, Lock, Mail, ShieldCheck, TriangleAlert, Users } from "lucide-react"
+import { ChevronRight, Eye, EyeOff, HardHat, ShieldCheck, Users } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useApp } from "@/lib/app-context"
+import { cn } from "@/lib/utils"
 import type { Role } from "@/lib/types"
 
-const ROLES: { role: Role; title: string; description: string; icon: typeof ShieldCheck; email: string }[] = [
+const ROLES: {
+  role: Role
+  title: string
+  description: string
+  icon: typeof ShieldCheck
+  email: string
+  iconClass: string
+  hoverClass: string
+}[] = [
   {
     role: "admin",
     title: "MDRRMO Admin",
     description: "Full access to incidents, victims, reports, and system settings.",
     icon: ShieldCheck,
     email: "ramil.santos@midsalip.gov.ph",
+    iconClass: "bg-destructive/10 text-destructive",
+    hoverClass: "hover:border-destructive/40 hover:bg-destructive/5",
   },
   {
     role: "encoder",
@@ -24,6 +34,8 @@ const ROLES: { role: Role; title: string; description: string; icon: typeof Shie
     description: "Create and update incident reports, victims, and geotags.",
     icon: HardHat,
     email: "jenny.ochoa@midsalip.gov.ph",
+    iconClass: "bg-warning/15 text-warning",
+    hoverClass: "hover:border-warning/40 hover:bg-warning/5",
   },
   {
     role: "viewer",
@@ -31,6 +43,8 @@ const ROLES: { role: Role; title: string; description: string; icon: typeof Shie
     description: "Read-only access to the dashboard, map, and reports.",
     icon: Users,
     email: "analyst@zdsprov.gov.ph",
+    iconClass: "bg-chart-5/10 text-chart-5",
+    hoverClass: "hover:border-chart-5/40 hover:bg-chart-5/5",
   },
 ]
 
@@ -68,182 +82,124 @@ export function LoginScreen() {
     }, 500)
   }
 
-  if (selectedRole && selectedRoleData) {
-    return (
-      <div className="flex min-h-svh items-center justify-center bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-sidebar via-sidebar to-[#050810] px-4 py-10">
-        <div className="w-full max-w-sm">
-          <div className="mb-6 flex flex-col items-center gap-3 text-center">
-            <div className="flex size-14 items-center justify-center rounded-full bg-gradient-to-br from-red-700 via-red-600 to-red-500 shadow-lg shadow-red-600/30">
-              <Lock className="size-7 text-white" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-extrabold text-red-800">Verify Your Identity</h2>
-              <p className="mt-1 text-base font-semibold text-gray-700">
-                Enter your password to access as{" "}
-                <span className="font-bold text-red-700">{selectedRoleData.title.split(" ")[0]}</span>
-              </p>
-            </div>
-          </div>
+  return (
+    <div className="flex min-h-svh flex-col items-center justify-center bg-muted/30 px-4 py-10 sm:px-8">
+      <div className="mb-8 flex flex-col items-center gap-2 text-center">
+        <Image src="/MIDSALIP.png" alt="Midsalip LDRRMO Logo" width={56} height={56} />
+        <h1 className="text-xl font-semibold text-foreground">Midsalip LDRRMO</h1>
+        <p className="text-xs text-muted-foreground">Disaster Risk Reduction &amp; Management</p>
+      </div>
 
-          <Card className="border-white/10 bg-card/95 shadow-2xl backdrop-blur">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <selectedRoleData.icon className="size-5" />
-                </div>
-                <div>
-                  <CardTitle className="text-lg">{selectedRoleData.title}</CardTitle>
-                  <CardDescription className="mt-0.5 text-xs">{selectedRoleData.email}</CardDescription>
-                </div>
+        {selectedRole && selectedRoleData ? (
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-background p-8 shadow-xl shadow-black/[0.04]">
+            <div className="mb-6 flex items-center gap-3">
+              <div className={cn("flex size-11 shrink-0 items-center justify-center rounded-xl", selectedRoleData.iconClass)}>
+                <selectedRoleData.icon className="size-5" />
               </div>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-medium">
-                    Password
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => {
-                        setPassword(e.target.value)
-                        setError("")
-                      }}
-                      className="pr-10"
-                      disabled={isLoading}
-                      autoFocus
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                      disabled={isLoading}
-                    >
-                      {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                    </button>
-                  </div>
-                </div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-foreground">{selectedRoleData.title}</p>
+                <p className="truncate text-xs text-muted-foreground">{selectedRoleData.email}</p>
+              </div>
+            </div>
 
-                {error && (
-                  <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive border border-destructive/20">
-                    {error}
-                  </div>
-                )}
-
-                <div className="space-y-2 pt-2">
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? "Verifying..." : "Login"}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => {
-                      setSelectedRole(null)
-                      setPassword("")
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-medium">
+                  Password
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value)
                       setError("")
                     }}
+                    className="h-11 pr-10"
+                    disabled={isLoading}
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     disabled={isLoading}
                   >
-                    Back
-                  </Button>
+                    {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  </button>
                 </div>
+              </div>
 
+              {error && (
+                <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                  {error}
+                </div>
+              )}
 
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="flex min-h-svh items-center justify-center bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-sidebar via-sidebar to-[#050810] px-4 py-10">
-      <div className="w-full max-w-4xl">
-        <div className="mb-10 flex flex-col items-center gap-4 text-center">
-          <Image 
-            src="/MIDSALIP.png" 
-            alt="Midsalip LDRRMO Logo" 
-            width={120} 
-            height={120}
-            className="drop-shadow-lg"
-          />
-          <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-red-700 drop-shadow-sm mb-2">
-              Local Government of Midsalip
-            </p>
-            <h1 className="text-4xl font-extrabold text-red-800 drop-shadow-sm sm:text-5xl">
-              Midsalip LDRRMO
-            </h1>
-            <p className="mt-2 text-lg font-bold text-red-700 drop-shadow-sm">Incident Report System</p>
-            <p className="mt-1 text-sm font-semibold text-gray-700 drop-shadow-sm">
-              Disaster Risk Reduction &amp; Management Information System
-            </p>
-          </div>
-        </div>
-
-        <Card className="border-transparent bg-transparent shadow-none">
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-extrabold text-red-800">Select Your Role</CardTitle>
-            <CardDescription className="mt-2 text-base font-semibold text-gray-700">Choose your account type to access the system</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 sm:grid-cols-3">
-              {ROLES.map(({ role, title, description, icon: Icon }) => (
-                <div
-                  key={role}
-                  onClick={() => setSelectedRole(role)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      setSelectedRole(role)
-                    }
+              <div className="space-y-2 pt-2">
+                <Button type="submit" className="h-11 w-full" disabled={isLoading}>
+                  {isLoading ? "Verifying..." : "Login"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="w-full"
+                  onClick={() => {
+                    setSelectedRole(null)
+                    setPassword("")
+                    setError("")
                   }}
-                  role="button"
-                  tabIndex={0}
-                  className="group relative flex flex-col items-start gap-4 rounded-xl border border-red-200 bg-gradient-to-br from-background/80 to-background/50 p-5 text-left transition-all duration-300 hover:border-red-400 hover:shadow-lg hover:shadow-red-200 hover:bg-gradient-to-br hover:from-background hover:to-background/80 focus:outline-none focus:ring-2 focus:ring-red-500 cursor-pointer"
+                  disabled={isLoading}
                 >
-                  {/* Background gradient on hover */}
-                  <div className="absolute inset-0 rounded-xl opacity-0 bg-gradient-to-br from-red-50 to-transparent group-hover:opacity-100 transition-opacity duration-300" />
+                  Back to role selection
+                </Button>
+              </div>
+            </form>
+          </div>
+        ) : (
+          <div className="w-full max-w-md rounded-2xl border border-border bg-background p-8 shadow-xl shadow-black/[0.04]">
+            <div className="mb-6 text-center">
+              <h2 className="text-xl font-semibold text-foreground">Welcome back</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Select your role to continue</p>
+            </div>
 
-                  <div className="relative flex size-12 items-center justify-center rounded-lg bg-gradient-to-br from-red-100 to-red-50 text-red-700 shadow-sm transition-all duration-300 group-hover:from-red-200 group-hover:to-red-100 group-hover:shadow-md group-hover:shadow-red-200">
-                    <Icon className="size-6" />
+            <div className="space-y-2.5">
+              {ROLES.map(({ role, title, description, icon: Icon, iconClass, hoverClass }) => (
+                <button
+                  key={role}
+                  type="button"
+                  onClick={() => setSelectedRole(role)}
+                  className={cn(
+                    "group flex w-full items-center gap-4 rounded-xl border border-border bg-background p-4 text-left transition-all",
+                    "hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    hoverClass,
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "flex size-11 shrink-0 items-center justify-center rounded-xl transition-transform group-hover:scale-110",
+                      iconClass,
+                    )}
+                  >
+                    <Icon className="size-5" />
                   </div>
-
-                  <div className="relative flex-1">
-                    <p className="font-semibold text-foreground text-sm group-hover:text-red-700 transition-colors">{title}</p>
-                    <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{description}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-foreground">{title}</p>
+                    <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{description}</p>
                   </div>
-
-                  <div className="relative w-full">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setSelectedRole(role)
-                      }}
-                      className="w-full px-4 py-2 rounded-md border border-red-300 text-red-700 hover:bg-red-50 hover:border-red-500 transition-all duration-300 group-hover:border-red-600 group-hover:bg-red-100 text-sm font-medium font-semibold"
-                    >
-                      Continue
-                    </button>
-                  </div>
-                </div>
+                  <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+                </button>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        )}
 
-        <div className="mt-8 text-center">
-          <p className="text-xs text-white/60">
-            Demo environment — all data shown is simulated for evaluation purposes.
-          </p>
-        </div>
+        <p className="mt-6 text-center text-xs text-muted-foreground">
+          Demo environment — all data shown is simulated for evaluation purposes.
+        </p>
       </div>
-    </div>
   )
 }
 

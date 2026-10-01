@@ -20,14 +20,13 @@ import { SidebarNav } from "@/components/layout/sidebar-nav"
 import { IncidentTypeBadge } from "@/components/shared/incident-type-badge"
 import { useApp } from "@/lib/app-context"
 import { formatDateTime } from "@/lib/format"
-import { BARANGAYS } from "@/lib/mock-data"
 import type { Role } from "@/lib/types"
 
 const ROLE_ICONS: Record<Role, typeof ShieldCheck> = { admin: ShieldCheck, encoder: HardHat, viewer: Users }
 const ROLE_LABELS: Record<Role, string> = { admin: "MDRRMO Admin", encoder: "Field Encoder / Responder", viewer: "Viewer / Analyst" }
 
 export function Topbar() {
-  const { role, currentUserName, login, logout, incidents } = useApp()
+  const { role, currentUserName, login, logout, incidents, barangays } = useApp()
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const ongoing = incidents.filter((i) => i.status === "ongoing").slice(0, 5)
@@ -68,7 +67,7 @@ export function Topbar() {
               <p className="px-4 py-6 text-center text-sm text-muted-foreground">No active alerts right now.</p>
             ) : (
               ongoing.map((inc) => {
-                const barangay = BARANGAYS.find((b) => b.id === inc.barangayId)
+                const barangay = barangays.find((b) => b.id === inc.barangayId)
                 return (
                   <div key={inc.id} className="flex flex-col gap-1.5 border-b border-border px-4 py-3 last:border-0">
                     <div className="flex items-center justify-between gap-2">

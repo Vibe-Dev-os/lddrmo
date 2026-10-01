@@ -10,10 +10,9 @@ import { SeverityBadge } from "@/components/shared/severity-badge"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { useApp } from "@/lib/app-context"
 import { formatDateTime } from "@/lib/format"
-import { BARANGAYS } from "@/lib/mock-data"
 
 export function RecentIncidentsList() {
-  const { filteredIncidents } = useApp()
+  const { filteredIncidents, barangays } = useApp()
   const recent = filteredIncidents.slice(0, 6)
 
   return (
@@ -40,7 +39,7 @@ export function RecentIncidentsList() {
         ) : (
           <div className="flex flex-col gap-1">
             {recent.map((inc) => {
-              const barangay = BARANGAYS.find((b) => b.id === inc.barangayId)
+              const barangay = barangays.find((b) => b.id === inc.barangayId)
               return (
                 <Link
                   key={inc.id}

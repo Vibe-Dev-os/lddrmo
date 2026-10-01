@@ -2,11 +2,12 @@ import { connectToDatabase } from "@/lib/db"
 import { IncidentModel, VictimModel } from "@/lib/models"
 import { NextResponse } from "next/server"
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase()
+    const { id } = await params
 
-    const incident = await IncidentModel.findOne({ id: params.id }).lean()
+    const incident = await IncidentModel.findOne({ id }).lean()
 
     if (!incident) {
       return NextResponse.json({ error: "Incident not found" }, { status: 404 })
@@ -19,13 +20,14 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase()
+    const { id } = await params
 
     const body = await request.json()
 
-    const incident = await IncidentModel.findOneAndUpdate({ id: params.id }, body, {
+    const incident = await IncidentModel.findOneAndUpdate({ id }, body, {
       new: true,
     }).lean()
 
@@ -40,15 +42,16 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase()
+    const { id } = await params
 
     // Delete incident
-    await IncidentModel.deleteOne({ id: params.id })
+    await IncidentModel.deleteOne({ id })
 
     // Delete associated victims
-    await VictimModel.deleteMany({ incidentId: params.id })
+    await VictimModel.deleteMany({ incidentId: id })
 
     return NextResponse.json({ success: true })
   } catch (error) {

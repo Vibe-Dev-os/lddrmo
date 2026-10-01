@@ -2,13 +2,6 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react"
 import { toast } from "sonner"
-import {
-  BARANGAYS as INITIAL_BARANGAYS,
-  INCIDENT_TYPES as INITIAL_INCIDENT_TYPES,
-  MOCK_INCIDENTS,
-  MOCK_VICTIMS,
-  STAFF_USERS as INITIAL_STAFF,
-} from "./mock-data"
 import type {
   Barangay,
   GlobalFilters,
@@ -37,6 +30,7 @@ interface NewIncidentInput {
 interface AppContextValue {
   role: Role | null
   currentUserName: string
+  loading: boolean
   login: (role: Role) => void
   logout: () => void
 
@@ -83,6 +77,16 @@ const DEFAULT_FILTERS: GlobalFilters = {
 
 let incidentCounter = 1000
 let victimCounter = 1000
+const SESSION_STORAGE_KEY = "ldrrmo.session"
+
+function readStoredSession(): { role: Role; currentUserName: string } | null {
+  try {
+    const raw = localStorage.getItem(SESSION_STORAGE_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<Role | null>(null)
@@ -92,15 +96,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const [incidents, setIncidents] = useState<Incident[]>([])
   const [victims, setVictims] = useState<Victim[]>([])
-  const [incidentTypes, setIncidentTypes] = useState<IncidentTypeDef[]>(INITIAL_INCIDENT_TYPES)
-  const [barangays, setBarangays] = useState<Barangay[]>(INITIAL_BARANGAYS)
-  const [staff, setStaff] = useState<StaffUser[]>(INITIAL_STAFF)
+  const [incidentTypes, setIncidentTypes] = useState<IncidentTypeDef[]>([])
+  const [barangays, setBarangays] = useState<Barangay[]>([])
+  const [staff, setStaff] = useState<StaffUser[]>([])
 
-  // Initialize database on mount
+  // Restore session and initialize database on mount
   useEffect(() => {
     const initializeData = async () => {
       try {
         setLoading(true)
+
+        const stored = readStoredSession()
+        if (stored) {
+          setRole(stored.role)
+          setCurrentUserName(stored.currentUserName)
+        }
 
         // Fetch all data from API (ONLY real MongoDB data, no mock fallback)
         const [incidentsRes, victimsRes, barangaysRes, staffRes, typesRes] = await Promise.all([
@@ -123,17 +133,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
         if (barangaysRes.ok) {
           const data = await barangaysRes.json()
-          setBarangays(data || INITIAL_BARANGAYS)
+          setBarangays(data || [])
         }
 
         if (staffRes.ok) {
           const data = await staffRes.json()
-          setStaff(data || INITIAL_STAFF)
+          setStaff(data || [])
         }
 
         if (typesRes.ok) {
           const data = await typesRes.json()
-          setIncidentTypes(data || INITIAL_INCIDENT_TYPES)
+          setIncidentTypes(data || [])
         }
       } catch (error) {
         console.error("Error loading data from database:", error)
@@ -150,12 +160,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setRole(r)
     const name = r === "admin" ? "Engr. Ramil Santos" : r === "encoder" ? "Jenny Ochoa" : "Provincial DRRM Analyst"
     setCurrentUserName(name)
+    localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({ role: r, currentUserName: name }))
     toast.success(`Logged in as ${name}`, { description: r === "admin" ? "MDRRMO Admin" : r === "encoder" ? "Field Encoder / Responder" : "Viewer / Analyst" })
   }, [])
 
   const logout = useCallback(() => {
     setRole(null)
     setCurrentUserName("Guest")
+    localStorage.removeItem(SESSION_STORAGE_KEY)
   }, [])
 
   const setFilters = useCallback((f: Partial<GlobalFilters>) => {
@@ -474,6 +486,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const value: AppContextValue = {
     role,
     currentUserName,
+    loading,
     login,
     logout,
     filters,

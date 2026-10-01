@@ -1,11 +1,5 @@
 import { connectToDatabase } from "@/lib/db"
-import {
-  INCIDENT_TYPES,
-  BARANGAYS,
-  STAFF_USERS,
-  MOCK_INCIDENTS,
-  MOCK_VICTIMS,
-} from "@/lib/mock-data"
+import { INCIDENT_TYPES, BARANGAYS, STAFF_USERS } from "@/lib/mock-data"
 import {
   IncidentTypeModel,
   BarangayModel,
@@ -15,6 +9,8 @@ import {
 } from "@/lib/models"
 import { NextResponse } from "next/server"
 
+// Seeds reference/config data only (incident types, barangays, staff accounts).
+// Incidents and victims are never seeded — they must come from real user input.
 export async function POST(request: Request) {
   try {
     await connectToDatabase()
@@ -42,24 +38,6 @@ export async function POST(request: Request) {
       await StaffUserModel.updateOne(
         { id: staff.id },
         { ...staff },
-        { upsert: true }
-      )
-    }
-
-    // Seed incidents
-    for (const incident of MOCK_INCIDENTS) {
-      await IncidentModel.updateOne(
-        { id: incident.id },
-        { ...incident },
-        { upsert: true }
-      )
-    }
-
-    // Seed victims
-    for (const victim of MOCK_VICTIMS) {
-      await VictimModel.updateOne(
-        { id: victim.id },
-        { ...victim },
         { upsert: true }
       )
     }

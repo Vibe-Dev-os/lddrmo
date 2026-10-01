@@ -2,11 +2,12 @@ import { connectToDatabase } from "@/lib/db"
 import { IncidentTypeModel } from "@/lib/models"
 import { NextResponse } from "next/server"
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase()
+    const { id } = await params
 
-    const incidentType = await IncidentTypeModel.findOne({ id: params.id }).lean()
+    const incidentType = await IncidentTypeModel.findOne({ id }).lean()
 
     if (!incidentType) {
       return NextResponse.json({ error: "Incident type not found" }, { status: 404 })
@@ -19,13 +20,14 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase()
+    const { id } = await params
 
     const body = await request.json()
 
-    const incidentType = await IncidentTypeModel.findOneAndUpdate({ id: params.id }, body, {
+    const incidentType = await IncidentTypeModel.findOneAndUpdate({ id }, body, {
       new: true,
     }).lean()
 
@@ -40,11 +42,12 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase()
+    const { id } = await params
 
-    await IncidentTypeModel.deleteOne({ id: params.id })
+    await IncidentTypeModel.deleteOne({ id })
 
     return NextResponse.json({ success: true })
   } catch (error) {
