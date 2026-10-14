@@ -31,6 +31,7 @@ export async function POST(request: Request) {
     return NextResponse.json(incident.toObject(), { status: 201 })
   } catch (error) {
     console.error("Error creating incident:", error)
-    return NextResponse.json({ error: "Failed to create incident" }, { status: 500 })
+    const message = error instanceof Error ? error.message : String(error)
+    return NextResponse.json({ error: "Failed to create incident", detail: message }, { status: 500 })
   }
 }

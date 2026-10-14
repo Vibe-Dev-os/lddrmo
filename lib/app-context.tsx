@@ -122,13 +122,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
         ])
 
         if (incidentsRes.ok) {
-          const data = await incidentsRes.json()
+          const data: Incident[] = await incidentsRes.json()
           setIncidents(data || [])
+          // Sync counter to highest existing incident number to avoid duplicate key errors
+          if (data && data.length > 0) {
+            const maxNum = data.reduce((max, inc) => {
+              const match = inc.id?.match(/(\d+)$/)
+              const num = match ? parseInt(match[1], 10) : 0
+              return Math.max(max, num)
+            }, 1000)
+            incidentCounter = maxNum
+          }
         }
 
         if (victimsRes.ok) {
-          const data = await victimsRes.json()
+          const data: Victim[] = await victimsRes.json()
           setVictims(data || [])
+          // Sync victim counter similarly
+          if (data && data.length > 0) {
+            const maxNum = data.reduce((max, v) => {
+              const match = v.id?.match(/(\d+)$/)
+              const num = match ? parseInt(match[1], 10) : 1000
+              return Math.max(max, num)
+            }, 1000)
+            victimCounter = maxNum
+          }
         }
 
         if (barangaysRes.ok) {
@@ -251,7 +269,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         })
 
         if (!incidentRes.ok) {
-          toast.error("Failed to save incident to database")
+          const errData = await incidentRes.json().catch(() => ({}))
+          toast.error("Failed to save incident to database", {
+            description: errData.detail || errData.error || `HTTP ${incidentRes.status}`,
+          })
           return incident
         }
 
