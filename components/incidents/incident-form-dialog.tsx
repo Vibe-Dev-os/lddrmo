@@ -104,13 +104,13 @@ export function IncidentFormDialog() {
     setVictims((prev) => prev.filter((_, i) => i !== idx))
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!description.trim()) {
       toast.error("Please provide an incident description.")
       return
     }
-    const incident = addIncident({
+    const incident = await addIncident({
       type,
       dateTime: new Date(dateTime).toISOString(),
       barangayId,

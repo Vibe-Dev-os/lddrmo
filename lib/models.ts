@@ -49,7 +49,6 @@ const incidentSchema = new Schema<IncidentDocument>(
     type: {
       type: String,
       required: true,
-      enum: ["flood", "fire", "landslide", "earthquake", "vehicular", "medical", "armed-conflict", "other"],
     },
     dateTime: {
       type: String,
